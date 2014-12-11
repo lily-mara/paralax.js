@@ -3,7 +3,7 @@ var fps = 30;
 var fov = 120;//horizontal field of vision in degrees
 
 //Geometric Model Constants
-var theta,thetaY,theta0,theta1,thetaL,thetaR,thetaV,a,b,c;
+var theta,thetaY,theta0,theta1,a,b,c;
 
 //various variables
 var canvasHeight,canvasWidth,timer;
@@ -32,35 +32,6 @@ function start(){
 	timer = setInterval(run,1000/fps);;
 }
 
-function goFullScreen(){
-	var wrapper = document.getElementById('wrap');
-
-	canvasHeight = screen.height;
-	canvasWidth = window.innerWidth/2;
-
-	wrapper.height = screen.height;
-	wrapper.width = window.innerWidth;
-
-	var canvas = document.getElementById("left");
-	canvas.width = canvasWidth;
-	canvas.height = canvasHeight;
-
-	canvas = document.getElementById("right");
-	canvas.width = canvasWidth;
-	canvas.height = canvasHeight;
-
-	document.getElementById('button').style.display="none";
-
-	if(wrapper.requestFullScreen)
-		wrapper.requestFullScreen();
-	else if(wrapper.webkitRequestFullScreen)
-		wrapper.webkitRequestFullScreen();
-	else if(wrapper.mozRequestFullScreen)
-		wrapper.mozRequestFullScreen();
-
-	//BEGIN MAIN SCRIPT
-	start();
-}
 
 function run(){
 	var ctl = document.getElementById("left").getContext("2d");
@@ -131,4 +102,38 @@ function sleep(milliseconds) {
 		}
 	}
 	return 0;
+}
+
+function Sphere(x, y, z) {
+	this.x = x;
+	this.y = y;
+	this.z = z;
+
+	this.update = function() {
+
+	}
+
+	this.left = function () {
+		var thetaV = Math.atan(y/(z+b));
+		var leftY = (canvasWidth/2) - (b*Math.tan(thetaV));
+
+		var thetaL = Math.atan((a+x)/(z+b));
+		var leftX = (canvasWidth/2)+(Math.tan(thetaL)*b);
+
+		return new Coordinate(leftX, leftY);
+	}
+
+	this.right = function () {
+		var thetaL = Math.atan((x-a)/(z+b));
+		var rightX = (canvasWidth/2)+(Math.tan(thetaL)*b);
+
+		var rightY = this.left().y;
+
+		return new Coordinate(rightX, rightY);
+	}
+}
+
+function Coordinate(x, y) {
+	this.x = x;
+	this.y = y;
 }
