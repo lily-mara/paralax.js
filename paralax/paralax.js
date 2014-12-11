@@ -20,12 +20,11 @@ var Paralax = function(leftCanvas, rightCanvas) {
 	this.z = [0,0,0];
 
 	//Test Model Variables
-	this.count=0;
+	this.count = 0;
 
 	this.shapes = [];
 
 	this.run = function() {
-		console.log(this.left);
 		this.left.fillStyle = "#FFFFFF";
 		this.right.fillStyle = "#FFFFFF";
 		this.left.fillRect(0,0,this.canvasWidth,this.canvasHeight);
@@ -34,23 +33,29 @@ var Paralax = function(leftCanvas, rightCanvas) {
 		this.left.fillStyle = "#000000";
 		this.right.fillStyle = "#000000";
 
-		for(var i = 0;i<x.length;i++){
-			//Prints all the of spheres using arrays and the screen position functions (the )
+		for(var i = 0; i < this.shapes.length; i++){
+			var s = this.shapes[i];
+			var left = s.left();
+			var right = s.right();
+			var radius = s.radius();
+
 			this.left.beginPath();
-			this.left.arc(leftX(x[i],y[i],z[i]),leftY(x[i],y[i],z[i]),findRadius(x[i],y[i],z[i],30),0,2*Math.PI);
+			this.left.arc(left.x, left.y, radius, 0, 2*Math.PI);
 			this.left.fill();
 
 			this.right.beginPath();
-			this.right.arc(rightX(x[i],y[i],z[i]),rightY(x[i],y[i],z[i]),findRadius(x[i],y[i],z[i],30),0,2*Math.PI);
+			this.right.arc(right.x, right.y, radius, 0, 2*Math.PI);
 			this.right.fill();
+
+			s.update(this.count);
 		}
 
 
-		x = [300*Math.cos(count),300*Math.cos(count),-300*Math.cos(count),-300*Math.cos(count),0];
-		y = [300*Math.cos(count),-300*Math.cos(count),300*Math.cos(count),-300*Math.cos(count),0];
-		z = [500 + 300*Math.sin(count),500 + 300*Math.sin(count),500 - 300*Math.sin(count),500 - 300*Math.sin(count),500];
+		// var x = [300*Math.cos(count),300*Math.cos(count),-300*Math.cos(count),-300*Math.cos(count),0];
+		// var y = [300*Math.cos(count),-300*Math.cos(count),300*Math.cos(count),-300*Math.cos(count),0];
+		// var z = [500 + 300*Math.sin(count),500 + 300*Math.sin(count),500 - 300*Math.sin(count),500 - 300*Math.sin(count),500];
 
-		count+=.07;
+		this.count += 0.07;
 	}
 
 	var that = this
@@ -67,56 +72,48 @@ Paralax.FPS = 30;
 // Field of vision in radians
 Paralax.FOV = Paralax.toRadians(120);
 
-//Screen Position Functions in Terms of 3D Position
-function leftX(x,y,z){
-	thetaL = Math.atan((a+x)/(z+b));
-	return (canvasWidth/2)+(Math.tan(thetaL)*b);
-}
-
-function leftY(x,y,z){
-	thetaV = Math.atan(y/(z+b));
-	return (canvasWidth/2) - (b*Math.tan(thetaV));
-}
-
-function rightX(x,y,z){
-	thetaL = Math.atan((x-a)/(z+b));
-	return (canvasWidth/2)+(Math.tan(thetaL)*b);
-}
-
-function rightY(x,y,z){
-	return leftY(x,y,z);//Same function because assuming no head tilt
-}
-
 function findRadius(x,y,z,realRadius){
 	return leftY(x,y-realRadius,z)-leftY(x,y,z);
 }
 
-function Sphere(x, y, z) {
+function Sphere(x, y, z, updateFunction, paralaxInstance) {
 	this.x = x;
 	this.y = y;
 	this.z = z;
-
-	this.update = function() {
-
-	}
+	this.instance = paralaxInstance;
+	this.update = updateFunction;
 
 	this.left = function () {
-		var thetaV = Math.atan(y/(z+b));
-		var leftY = (canvasWidth/2) - (b*Math.tan(thetaV));
+		var b = this.instance.b;
+		var a = this.instance.a;
+		var width = this.instance.canvasWidth;
+		var height = this.instance.canvasHeight;
 
-		var thetaL = Math.atan((a+x)/(z+b));
-		var leftX = (canvasWidth/2)+(Math.tan(thetaL)*b);
+		var thetaV = Math.atan(this.y / (this.z + this.b));
+		var leftY = (width / 2) - (b * Math.tan(thetaV));
+
+		var thetaL = Math.atan((a + this.x) / (this.z + b));
+		var leftX = (width / 2) + (Math.tan(thetaL) * b);
 
 		return new Coordinate(leftX, leftY);
 	}
 
 	this.right = function () {
-		var thetaL = Math.atan((x-a)/(z+b));
-		var rightX = (canvasWidth/2)+(Math.tan(thetaL)*b);
+		var b = this.instance.b;
+		var a = this.instance.a;
+		var width = this.instance.canvasWidth;
+		var height = this.instance.canvasHeight;
+
+		var thetaL = Math.atan((this.x - a) / (this.z + b));
+		var rightX = (canvasWidth / 2) + (Math.tan(thetaL) * b);
 
 		var rightY = this.left().y;
 
 		return new Coordinate(rightX, rightY);
+	}
+
+	this.radius = function() {
+		return 20;
 	}
 }
 
