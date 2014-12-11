@@ -15,8 +15,6 @@ function goFullScreen(){
 	canvas.width = canvasWidth;
 	canvas.height = canvasHeight;
 
-	document.getElementById('button').style.display="none";
-
 	if(wrapper.requestFullScreen)
 		wrapper.requestFullScreen();
 	else if(wrapper.webkitRequestFullScreen)
@@ -27,3 +25,5 @@ function goFullScreen(){
 	//BEGIN MAIN SCRIPT
 	start();
 }
+
+window.onload = goFullScreen;
