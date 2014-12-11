@@ -1,4 +1,6 @@
 function goFullScreen(){
+	document.getElementById('button').style.display="none";
+
 	var wrapper = document.getElementById('wrap');
 
 	canvasHeight = screen.height;
@@ -26,5 +28,3 @@ function goFullScreen(){
 	//BEGIN MAIN SCRIPT
 	start();
 }
-
-window.onload = goFullScreen;
