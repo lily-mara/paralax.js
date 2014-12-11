@@ -15,12 +15,13 @@ function goFullScreen(){
 	canvas.width = canvasWidth;
 	canvas.height = canvasHeight;
 
-	if(wrapper.requestFullScreen)
+	if(wrapper.requestFullScreen) {
 		wrapper.requestFullScreen();
-	else if(wrapper.webkitRequestFullScreen)
+	} else if(wrapper.webkitRequestFullScreen) {
 		wrapper.webkitRequestFullScreen();
-	else if(wrapper.mozRequestFullScreen)
+	} else if(wrapper.mozRequestFullScreen) {
 		wrapper.mozRequestFullScreen();
+	}
 
 	//BEGIN MAIN SCRIPT
 	start();
