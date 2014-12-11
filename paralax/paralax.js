@@ -1,10 +1,31 @@
-var Paralax = Paralax || {};
+var Paralax = function(leftCanvas, rightCanvas) {
+	this.left = document.getElementById(leftCanvas).getContext("2d");
+	this.right = document.getElementById(rightCanvas).getContext("2d");
+
+	//Geometric Model Variables
+	this.a = canvasWidth/2;
+	this.c = canvasHeight/2;
+	this.b = a / Math.tan(Paralax.FOV/2);
+	this.theta0 = Math.atan(b/a);
+	this.theta = Math.PI - (2*theta0);
+	this.theta1 = Math.atan(b/c);
+	this.thetaY = Math.PI - (2*theta1);
+
+	//Test Model Variables
+	this.count=0;
+
+	this.timer = setInterval(this.run,1000/Paralax.FPS);;
+} || {};
+
+Paralax.toRadians = function (angle) {
+  return angle * (Math.PI / 180);
+}
 
 // Frames per second
 Paralax.FPS = 30;
 
-// Field of vision in degrees
-Paralax.FOV = 120;
+// Field of vision in radians
+Paralax.FOV = Paralax.toRadians(120);
 
 //Geometric Model Constants
 var theta,thetaY,theta0,theta1,a,b,c;
@@ -19,45 +40,27 @@ var y = [0,0,0];
 var z = [0,0,0];
 
 Paralax.start = function(){
-
-	//Geometric Model Variables
-	a = canvasWidth/2;
-	c = canvasHeight/2;
-	Paralax.FOV *= .0174532925;//convert to radians
-	b = a / Math.tan(Paralax.FOV/2);
-	theta0 = Math.atan(b/a);
-	theta = Math.PI - (2*theta0);
-	theta1 = Math.atan(b/c);
-	thetaY = Math.PI - (2*theta1);
-
-	//Test Model Variables
-	count=0;
-
-	timer = setInterval(run,1000/Paralax.FPS);;
 }
 
 
-function run(){
-	var ctl = document.getElementById("left").getContext("2d");
-	var ctr = document.getElementById("right").getContext("2d");
+Paralax.run = function() {
+	this.left.fillStyle = "#FFFFFF";
+	this.right.fillStyle = "#FFFFFF";
+	this.left.fillRect(0,0,canvasWidth,canvasHeight);
+	this.right.fillRect(0,0,canvasWidth,canvasHeight);
 
-	ctl.fillStyle = "#FFFFFF";
-	ctr.fillStyle = "#FFFFFF";
-	ctl.fillRect(0,0,canvasWidth,canvasHeight);
-	ctr.fillRect(0,0,canvasWidth,canvasHeight);
-
-	ctl.fillStyle = "#000000";
-	ctr.fillStyle = "#000000";
+	this.left.fillStyle = "#000000";
+	this.right.fillStyle = "#000000";
 
 	for(var i = 0;i<x.length;i++){
 		//Prints all the of spheres using arrays and the screen position functions (the )
-		ctl.beginPath();
-		ctl.arc(leftX(x[i],y[i],z[i]),leftY(x[i],y[i],z[i]),findRadius(x[i],y[i],z[i],30),0,2*Math.PI);
-		ctl.fill();
+		this.left.beginPath();
+		this.left.arc(leftX(x[i],y[i],z[i]),leftY(x[i],y[i],z[i]),findRadius(x[i],y[i],z[i],30),0,2*Math.PI);
+		this.left.fill();
 
-		ctr.beginPath();
-		ctr.arc(rightX(x[i],y[i],z[i]),rightY(x[i],y[i],z[i]),findRadius(x[i],y[i],z[i],30),0,2*Math.PI);
-		ctr.fill();
+		this.right.beginPath();
+		this.right.arc(rightX(x[i],y[i],z[i]),rightY(x[i],y[i],z[i]),findRadius(x[i],y[i],z[i],30),0,2*Math.PI);
+		this.right.fill();
 	}
 
 
