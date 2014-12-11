@@ -1,6 +1,10 @@
-//Set frames per second
-var fps = 30;
-var fov = 120;//horizontal field of vision in degrees
+var Paralax = Paralax || {};
+
+// Frames per second
+Paralax.FPS = 30;
+
+// Field of vision in degrees
+Paralax.FOV = 120;
 
 //Geometric Model Constants
 var theta,thetaY,theta0,theta1,a,b,c;
@@ -14,13 +18,13 @@ var x = [0,0,0];
 var y = [0,0,0];
 var z = [0,0,0];
 
-function start(){
+Paralax.start = function(){
 
 	//Geometric Model Variables
 	a = canvasWidth/2;
 	c = canvasHeight/2;
-	fov *= .0174532925;//convert to radians
-	b = a / Math.tan(fov/2);
+	Paralax.FOV *= .0174532925;//convert to radians
+	b = a / Math.tan(Paralax.FOV/2);
 	theta0 = Math.atan(b/a);
 	theta = Math.PI - (2*theta0);
 	theta1 = Math.atan(b/c);
@@ -29,7 +33,7 @@ function start(){
 	//Test Model Variables
 	count=0;
 
-	timer = setInterval(run,1000/fps);;
+	timer = setInterval(run,1000/Paralax.FPS);;
 }
 
 
