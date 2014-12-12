@@ -27,11 +27,28 @@ function goFullScreen(){
 		wrapper.mozRequestFullScreen();
 	}
 
-	//BEGIN MAIN SCRIPT
 	p = new Paralax('left', 'right');
+
 	p.shapes.push(new Sphere(0, 0, 0, function(count) {
 		this.x = 300*Math.cos(count);
 		this.y = 300*Math.cos(count);
 		this.z = 500 + 300*Math.sin(count);
+	}, p));
+	p.shapes.push(new Sphere(0, 0, 0, function(count) {
+		this.x = 300*Math.cos(count);
+		this.y = -300*Math.cos(count);
+		this.z = 500 + 300*Math.sin(count);
+	}, p));
+	p.shapes.push(new Sphere(0, 0, 0, function(count) {
+		this.x = -300*Math.cos(count);
+		this.y = 300*Math.cos(count);
+		this.z = 500 - 300*Math.sin(count);
+	}, p));
+	p.shapes.push(new Sphere(0, 0, 0, function(count) {
+		this.x = -300*Math.cos(count);
+		this.y = -300*Math.cos(count);
+		this.z = 500 - 300*Math.sin(count);
+	}, p));
+	p.shapes.push(new Sphere(0, 0, 500, function(count) {
 	}, p));
 }
