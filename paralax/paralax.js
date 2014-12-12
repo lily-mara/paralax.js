@@ -35,17 +35,19 @@ var Paralax = function(leftCanvas, rightCanvas) {
 
 		for(var i = 0; i < this.shapes.length; i++){
 			var s = this.shapes[i];
-			var left = s.left();
-			var right = s.right();
+			var shapeLeft = s.left();
+			var shapeRight = s.right();
 			var radius = s.radius();
 
 			this.left.beginPath();
-			this.left.arc(left.x, left.y, radius, 0, 2*Math.PI);
+			this.left.arc(shapeLeft.x, shapeLeft.y, radius, 0, 2*Math.PI);
 			this.left.fill();
+			this.left.closePath();
 
 			this.right.beginPath();
-			this.right.arc(right.x, right.y, radius, 0, 2*Math.PI);
+			this.right.arc(shapeRight.x, shapeRight.y, radius, 0, 2*Math.PI);
 			this.right.fill();
+			this.right.closePath();
 
 			s.update(this.count);
 		}
@@ -72,16 +74,13 @@ Paralax.FPS = 30;
 // Field of vision in radians
 Paralax.FOV = Paralax.toRadians(120);
 
-function findRadius(x,y,z,realRadius){
-	return leftY(x,y-realRadius,z)-leftY(x,y,z);
-}
-
-function Sphere(x, y, z, updateFunction, paralaxInstance) {
+function Sphere(x, y, z, updateFunction, paralaxInstance, radius=30) {
 	this.x = x;
 	this.y = y;
 	this.z = z;
 	this.instance = paralaxInstance;
 	this.update = updateFunction;
+	this.realRadius = radius;
 
 	this.left = function () {
 		var b = this.instance.b;
@@ -89,8 +88,7 @@ function Sphere(x, y, z, updateFunction, paralaxInstance) {
 		var width = this.instance.canvasWidth;
 		var height = this.instance.canvasHeight;
 
-		var thetaV = Math.atan(this.y / (this.z + this.b));
-		var leftY = (width / 2) - (b * Math.tan(thetaV));
+		var leftY = this.findY(this.x, this.y, this.z);
 
 		var thetaL = Math.atan((a + this.x) / (this.z + b));
 		var leftX = (width / 2) + (Math.tan(thetaL) * b);
@@ -105,15 +103,27 @@ function Sphere(x, y, z, updateFunction, paralaxInstance) {
 		var height = this.instance.canvasHeight;
 
 		var thetaL = Math.atan((this.x - a) / (this.z + b));
-		var rightX = (canvasWidth / 2) + (Math.tan(thetaL) * b);
+		var rightX = (width / 2) + (Math.tan(thetaL) * b);
 
-		var rightY = this.left().y;
+		var rightY = this.findY(this.x, this.y, this.z);
 
 		return new Coordinate(rightX, rightY);
 	}
 
+	this.findY = function(x, y, z) {
+		var b = this.instance.b;
+		var a = this.instance.a;
+		var width = this.instance.canvasWidth;
+		var height = this.instance.canvasHeight;
+
+		var thetaV = Math.atan(this.y / (this.z + b));
+		var newY = (width / 2) - (b * Math.tan(thetaV));
+
+		return newY;
+	}
+
 	this.radius = function() {
-		return 20;
+		return this.findY(this.x, this.y - this.realRadius, this.z) - this.findY(this.x, this.y, this.z);
 	}
 }
 
