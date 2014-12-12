@@ -116,14 +116,16 @@ function Sphere(x, y, z, updateFunction, paralaxInstance, radius=30) {
 		var width = this.instance.canvasWidth;
 		var height = this.instance.canvasHeight;
 
-		var thetaV = Math.atan(this.y / (this.z + b));
+		var thetaV = Math.atan(y / (z + b));
 		var newY = (width / 2) - (b * Math.tan(thetaV));
 
 		return newY;
 	}
 
 	this.radius = function() {
-		return this.findY(this.x, this.y - this.realRadius, this.z) - this.findY(this.x, this.y, this.z);
+		var firstY = this.findY(this.x, this.y - this.realRadius, this.z);
+		var secondY = this.findY(this.x, this.y, this.z);
+		return firstY - secondY;
 	}
 }
 
